@@ -1,0 +1,12 @@
+*.o
+*.a
+*.swp
+*~
+*.out
+*.out*
+*.ignore
+.DS_STORE
+*.pyc
+*.log
+*.aux
+.cm

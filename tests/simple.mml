@@ -1,0 +1,6 @@
+val lol = fn x y =>
+    let
+        fun p y = x
+    in
+        p y
+    end

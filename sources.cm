@@ -1,0 +1,37 @@
+Group is
+        $/basis.cm
+        $/smlnj-lib.cm
+        $smlnj-tdp/back-trace.cm
+        $/ml-yacc-lib.cm
+
+        minml-untyped.sml
+        untyped-util-sig.sml
+        untyped-util.sml
+
+        minml-typed.sml
+        typed-util-sig.sml
+        typed-util.sml
+
+        context-sig.sml
+        context.sml
+
+        infer-sig.sml
+        infer.sml
+
+        typecheck-sig.sml
+        typecheck.sml
+
+        evaluator-sig.sml
+        evaluator.sml
+        
+        interpreter/minml-named.sml
+        interpreter/lang.grm
+        interpreter/lang.lex
+        interpreter/parse.sml
+        interpreter/stream.sml
+        interpreter/input.sml
+        toplevel-sig.sml
+        toplevel.sml
+        timeout.sml
+        test-sig.sml
+        test.sml

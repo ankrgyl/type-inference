@@ -1,0 +1,41 @@
+(* These are some /really/ wacky hacks the mlton guys came up with. *)
+(* See: http://mlton.org/Fold *)
+val nl = roll (inl ())
+fun cons x xs = roll (inr (x, xs))
+(* This is wacky to force it to have the correct non-polymorphic type *)
+val zero = (case inl () of inl x => nl | inr x => cons () nl)
+val succ = cons ()
+
+fun add x y =
+    (case unroll x of
+         inl _ => y
+       | inr a => succ (add (snd a) y))
+fun revAppend l1 l2 =
+    (case unroll l1 of
+         inl _ => l2
+       | inr xxs => revAppend (snd xxs) (cons (fst xxs) l2))
+fun rev l = revAppend l nl
+
+fun $ p = (snd p) (fst p)
+fun id x = x
+fun fold p g = g (fst p, snd p)
+fun step0 h p = fold (h (fst p), snd p)
+
+val sum1 = fold (0, fn s => s)
+fun a i = step0 (fn s => add i s)
+
+(* Variable number of arguments *)
+val sumtest = sum1 (a 1) (a 2) (a 3) $
+
+fun step1 h p b = fold (h (b, fst p), snd p)
+
+val sum2 = fold (0, fn p => p)
+val ` = step1 (fn p => add (fst p) (snd p))
+(* Slightly less ugly variable number of arguments. *)
+val sumtest2 = sum2 `1 `2 `3 $
+
+(* List literals! *)
+val list = fold (nl, rev)
+val ` = step1 (fn p => cons (fst p) (snd p))
+
+val alist = list `8 `6 `7 `5 `3 `0 `9 $

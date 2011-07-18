@@ -1,0 +1,8 @@
+(* Exponential type checking *)
+fun x y = x y
+val x = (x, x)
+val x = (x, x)
+val x = (x, x)
+val x = (x, x)
+val x = (x, x)
+val x = (x, x)

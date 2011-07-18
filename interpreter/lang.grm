@@ -1,0 +1,79 @@
+structure L = MinMLNamedUntyped
+exception Parse of string
+
+fun createlet (var, e1) e2 = L.ELet (var, e1, e2)
+fun createfun vars funend = foldl L.ELam funend vars
+fun createcase e (xl,el) (xr,er) = L.ECase (e, xl, el, xr, er)
+
+fun createnat 0 = L.ERollList (L.EInl L.EUnit)
+  | createnat n = L.ERollList (L.EInr (L.EPair (L.EUnit, createnat (n-1))))
+
+fun letify e decls = foldl (fn ((x, e1), e) => L.ELet (x, e1, e)) e decls
+
+%%
+
+%term EOF | IDENT of string | LPAREN | RPAREN | 
+ LET | VAL | IN | END | OF | SEMI |
+ EQUALS | GOESTO |
+ FUN | FN | COMMA |
+ INL | INR |  BAR | CASE | FST | SND | ROLL | UNROLL |
+ NUMBER of int
+
+%nonterm 
+   start of (string * L.expr) list
+ | decl of string * L.expr
+ | decls of (string * L.expr) list
+ | funargs of string list
+ | exp of L.expr
+ | builtin of L.expr -> L.expr
+ | atomic_exp_list of L.expr
+ | atomic_exp of L.expr
+
+%verbose
+%pos int
+%start start
+%eop EOF SEMI
+%noshift EOF SEMI
+%name Exp
+%left EQUALS
+%%
+
+start : decls                   (decls)
+      | exp                     ([("it", exp)])
+
+(* decls list is built backwards *)
+decls : decl                    ([decl])
+      | decls decl              (decl::decls)
+(* funargs list is built backwards *)
+funargs : IDENT                 ([IDENT])
+        | funargs IDENT         (IDENT::funargs)
+
+decl  : VAL IDENT EQUALS exp    (IDENT, exp)
+      | FUN IDENT funargs EQUALS exp
+                                (IDENT, L.EFix (IDENT, createfun funargs exp))
+
+exp   : atomic_exp_list         (atomic_exp_list)
+      | FN funargs GOESTO exp   (createfun funargs exp)
+
+builtin : INL                   (L.EInl)
+        | INR                   (L.EInr)
+        | FST                   (L.EFst)
+        | SND                   (L.ESnd)
+        | ROLL                  (L.ERollList)
+        | UNROLL                (L.EUnrollList)
+
+atomic_exp_list : atomic_exp                 (atomic_exp)
+                | builtin atomic_exp         (builtin atomic_exp)
+                | atomic_exp_list atomic_exp (L.EApp (atomic_exp_list, atomic_exp))
+
+atomic_exp : IDENT                        (L.EVar IDENT)
+           | LET decls IN exp END         (letify exp decls)
+           | NUMBER                       (createnat NUMBER)
+           | LPAREN CASE exp OF
+             INL IDENT GOESTO exp
+             BAR 
+             INR IDENT GOESTO exp
+             RPAREN                       (createcase exp1 (IDENT1,exp2) (IDENT2,exp3))
+           | LPAREN exp COMMA exp RPAREN  (L.EPair (exp1, exp2))
+           | LPAREN RPAREN                (L.EUnit)
+           | LPAREN exp RPAREN            (exp)

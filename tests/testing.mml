@@ -1,0 +1,40 @@
+(* Trying to load this into sml if it is actually named nil doesn't
+ * work because you aren't allowed to shadow constructors with
+ * values. *)
+val nl = roll (inl ())
+fun cons x xs = roll (inr (x, xs))
+(* This is wacky to force it to have the correct non-polymorphic type *)
+val zero = (case inl () of inl x => nl | inr x => cons () nl)
+val succ = cons ()
+
+fun id x = x
+fun selfpair x = (x, x)
+fun compose f g x = f (g x)
+
+fun add x y =
+    (case unroll x of
+         inl a => y
+       | inr a => succ (add (snd a) y))
+
+fun tabulate f n =
+    let fun loop i left =
+            (case unroll left of
+                 inl _ => nl
+               | inr s => cons (f i) (loop (succ i) (snd s)))
+    in loop zero n end
+fun upto n = tabulate id n
+
+fun foldr f z l =
+    let fun loop l =
+            (case unroll l of
+                 inl _ => z
+               | inr xxs =>
+                 let val x = fst xxs
+                     val xs = snd xxs
+                 in f x (loop xs) end)
+    in loop l end
+
+fun map f = foldr (fn x => fn xs => cons (f x) xs) nl
+
+val example = upto 4
+val map_test = map (add 2) example

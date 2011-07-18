@@ -1,0 +1,746 @@
+
+state 0:
+
+	start : . decls 
+	start : . exp 
+
+	IDENT	shift 19
+	LPAREN	shift 18
+	LET	shift 17
+	VAL	shift 16
+	FUN	shift 15
+	FN	shift 14
+	INL	shift 13
+	INR	shift 12
+	FST	shift 11
+	SND	shift 10
+	ROLL	shift 9
+	UNROLL	shift 8
+	NUMBER	shift 7
+
+	start	goto 58
+	decl	goto 6
+	decls	goto 5
+	exp	goto 4
+	builtin	goto 3
+	atomic_exp_list	goto 2
+	atomic_exp	goto 1
+
+	.	error
+
+
+state 1:
+
+	atomic_exp_list : atomic_exp .  (reduce by rule 16)
+
+
+
+	.	reduce by rule 16
+
+
+state 2:
+
+	exp : atomic_exp_list .  (reduce by rule 8)
+	atomic_exp_list : atomic_exp_list . atomic_exp 
+
+	IDENT	shift 19
+	LPAREN	shift 18
+	LET	shift 17
+	NUMBER	shift 7
+
+	atomic_exp	goto 20
+
+	.	reduce by rule 8
+
+
+state 3:
+
+	atomic_exp_list : builtin . atomic_exp 
+
+	IDENT	shift 19
+	LPAREN	shift 18
+	LET	shift 17
+	NUMBER	shift 7
+
+	atomic_exp	goto 21
+
+	.	error
+
+
+state 4:
+
+	start : exp .  (reduce by rule 1)
+
+
+
+	.	reduce by rule 1
+
+
+state 5:
+
+	start : decls .  (reduce by rule 0)
+	decls : decls . decl 
+
+	VAL	shift 16
+	FUN	shift 15
+
+	decl	goto 22
+
+	.	reduce by rule 0
+
+
+state 6:
+
+	decls : decl .  (reduce by rule 2)
+
+
+
+	.	reduce by rule 2
+
+
+state 7:
+
+	atomic_exp : NUMBER .  (reduce by rule 21)
+
+
+
+	.	reduce by rule 21
+
+
+state 8:
+
+	builtin : UNROLL .  (reduce by rule 15)
+
+
+
+	.	reduce by rule 15
+
+
+state 9:
+
+	builtin : ROLL .  (reduce by rule 14)
+
+
+
+	.	reduce by rule 14
+
+
+state 10:
+
+	builtin : SND .  (reduce by rule 13)
+
+
+
+	.	reduce by rule 13
+
+
+state 11:
+
+	builtin : FST .  (reduce by rule 12)
+
+
+
+	.	reduce by rule 12
+
+
+state 12:
+
+	builtin : INR .  (reduce by rule 11)
+
+
+
+	.	reduce by rule 11
+
+
+state 13:
+
+	builtin : INL .  (reduce by rule 10)
+
+
+
+	.	reduce by rule 10
+
+
+state 14:
+
+	exp : FN . funargs GOESTO exp 
+
+	IDENT	shift 24
+
+	funargs	goto 23
+
+	.	error
+
+
+state 15:
+
+	decl : FUN . IDENT funargs EQUALS exp 
+
+	IDENT	shift 25
+
+
+	.	error
+
+
+state 16:
+
+	decl : VAL . IDENT EQUALS exp 
+
+	IDENT	shift 26
+
+
+	.	error
+
+
+state 17:
+
+	atomic_exp : LET . decls IN exp END 
+
+	VAL	shift 16
+	FUN	shift 15
+
+	decl	goto 6
+	decls	goto 27
+
+	.	error
+
+
+state 18:
+
+	atomic_exp : LPAREN . CASE exp OF INL IDENT GOESTO exp BAR INR IDENT GOESTO exp RPAREN 
+	atomic_exp : LPAREN . exp COMMA exp RPAREN 
+	atomic_exp : LPAREN . RPAREN 
+	atomic_exp : LPAREN . exp RPAREN 
+
+	IDENT	shift 19
+	LPAREN	shift 18
+	RPAREN	shift 30
+	LET	shift 17
+	FN	shift 14
+	INL	shift 13
+	INR	shift 12
+	CASE	shift 29
+	FST	shift 11
+	SND	shift 10
+	ROLL	shift 9
+	UNROLL	shift 8
+	NUMBER	shift 7
+
+	exp	goto 28
+	builtin	goto 3
+	atomic_exp_list	goto 2
+	atomic_exp	goto 1
+
+	.	error
+
+
+state 19:
+
+	atomic_exp : IDENT .  (reduce by rule 19)
+
+
+
+	.	reduce by rule 19
+
+
+state 20:
+
+	atomic_exp_list : atomic_exp_list atomic_exp .  (reduce by rule 18)
+
+
+
+	.	reduce by rule 18
+
+
+state 21:
+
+	atomic_exp_list : builtin atomic_exp .  (reduce by rule 17)
+
+
+
+	.	reduce by rule 17
+
+
+state 22:
+
+	decls : decls decl .  (reduce by rule 3)
+
+
+
+	.	reduce by rule 3
+
+
+state 23:
+
+	funargs : funargs . IDENT 
+	exp : FN funargs . GOESTO exp 
+
+	IDENT	shift 32
+	GOESTO	shift 31
+
+
+	.	error
+
+
+state 24:
+
+	funargs : IDENT .  (reduce by rule 4)
+
+
+
+	.	reduce by rule 4
+
+
+state 25:
+
+	decl : FUN IDENT . funargs EQUALS exp 
+
+	IDENT	shift 24
+
+	funargs	goto 33
+
+	.	error
+
+
+state 26:
+
+	decl : VAL IDENT . EQUALS exp 
+
+	EQUALS	shift 34
+
+
+	.	error
+
+
+state 27:
+
+	decls : decls . decl 
+	atomic_exp : LET decls . IN exp END 
+
+	VAL	shift 16
+	IN	shift 35
+	FUN	shift 15
+
+	decl	goto 22
+
+	.	error
+
+
+state 28:
+
+	atomic_exp : LPAREN exp . COMMA exp RPAREN 
+	atomic_exp : LPAREN exp . RPAREN 
+
+	RPAREN	shift 37
+	COMMA	shift 36
+
+
+	.	error
+
+
+state 29:
+
+	atomic_exp : LPAREN CASE . exp OF INL IDENT GOESTO exp BAR INR IDENT GOESTO exp RPAREN 
+
+	IDENT	shift 19
+	LPAREN	shift 18
+	LET	shift 17
+	FN	shift 14
+	INL	shift 13
+	INR	shift 12
+	FST	shift 11
+	SND	shift 10
+	ROLL	shift 9
+	UNROLL	shift 8
+	NUMBER	shift 7
+
+	exp	goto 38
+	builtin	goto 3
+	atomic_exp_list	goto 2
+	atomic_exp	goto 1
+
+	.	error
+
+
+state 30:
+
+	atomic_exp : LPAREN RPAREN .  (reduce by rule 24)
+
+
+
+	.	reduce by rule 24
+
+
+state 31:
+
+	exp : FN funargs GOESTO . exp 
+
+	IDENT	shift 19
+	LPAREN	shift 18
+	LET	shift 17
+	FN	shift 14
+	INL	shift 13
+	INR	shift 12
+	FST	shift 11
+	SND	shift 10
+	ROLL	shift 9
+	UNROLL	shift 8
+	NUMBER	shift 7
+
+	exp	goto 39
+	builtin	goto 3
+	atomic_exp_list	goto 2
+	atomic_exp	goto 1
+
+	.	error
+
+
+state 32:
+
+	funargs : funargs IDENT .  (reduce by rule 5)
+
+
+
+	.	reduce by rule 5
+
+
+state 33:
+
+	decl : FUN IDENT funargs . EQUALS exp 
+	funargs : funargs . IDENT 
+
+	IDENT	shift 32
+	EQUALS	shift 40
+
+
+	.	error
+
+
+state 34:
+
+	decl : VAL IDENT EQUALS . exp 
+
+	IDENT	shift 19
+	LPAREN	shift 18
+	LET	shift 17
+	FN	shift 14
+	INL	shift 13
+	INR	shift 12
+	FST	shift 11
+	SND	shift 10
+	ROLL	shift 9
+	UNROLL	shift 8
+	NUMBER	shift 7
+
+	exp	goto 41
+	builtin	goto 3
+	atomic_exp_list	goto 2
+	atomic_exp	goto 1
+
+	.	error
+
+
+state 35:
+
+	atomic_exp : LET decls IN . exp END 
+
+	IDENT	shift 19
+	LPAREN	shift 18
+	LET	shift 17
+	FN	shift 14
+	INL	shift 13
+	INR	shift 12
+	FST	shift 11
+	SND	shift 10
+	ROLL	shift 9
+	UNROLL	shift 8
+	NUMBER	shift 7
+
+	exp	goto 42
+	builtin	goto 3
+	atomic_exp_list	goto 2
+	atomic_exp	goto 1
+
+	.	error
+
+
+state 36:
+
+	atomic_exp : LPAREN exp COMMA . exp RPAREN 
+
+	IDENT	shift 19
+	LPAREN	shift 18
+	LET	shift 17
+	FN	shift 14
+	INL	shift 13
+	INR	shift 12
+	FST	shift 11
+	SND	shift 10
+	ROLL	shift 9
+	UNROLL	shift 8
+	NUMBER	shift 7
+
+	exp	goto 43
+	builtin	goto 3
+	atomic_exp_list	goto 2
+	atomic_exp	goto 1
+
+	.	error
+
+
+state 37:
+
+	atomic_exp : LPAREN exp RPAREN .  (reduce by rule 25)
+
+
+
+	.	reduce by rule 25
+
+
+state 38:
+
+	atomic_exp : LPAREN CASE exp . OF INL IDENT GOESTO exp BAR INR IDENT GOESTO exp RPAREN 
+
+	OF	shift 44
+
+
+	.	error
+
+
+state 39:
+
+	exp : FN funargs GOESTO exp .  (reduce by rule 9)
+
+
+
+	.	reduce by rule 9
+
+
+state 40:
+
+	decl : FUN IDENT funargs EQUALS . exp 
+
+	IDENT	shift 19
+	LPAREN	shift 18
+	LET	shift 17
+	FN	shift 14
+	INL	shift 13
+	INR	shift 12
+	FST	shift 11
+	SND	shift 10
+	ROLL	shift 9
+	UNROLL	shift 8
+	NUMBER	shift 7
+
+	exp	goto 45
+	builtin	goto 3
+	atomic_exp_list	goto 2
+	atomic_exp	goto 1
+
+	.	error
+
+
+state 41:
+
+	decl : VAL IDENT EQUALS exp .  (reduce by rule 6)
+
+
+
+	.	reduce by rule 6
+
+
+state 42:
+
+	atomic_exp : LET decls IN exp . END 
+
+	END	shift 46
+
+
+	.	error
+
+
+state 43:
+
+	atomic_exp : LPAREN exp COMMA exp . RPAREN 
+
+	RPAREN	shift 47
+
+
+	.	error
+
+
+state 44:
+
+	atomic_exp : LPAREN CASE exp OF . INL IDENT GOESTO exp BAR INR IDENT GOESTO exp RPAREN 
+
+	INL	shift 48
+
+
+	.	error
+
+
+state 45:
+
+	decl : FUN IDENT funargs EQUALS exp .  (reduce by rule 7)
+
+
+
+	.	reduce by rule 7
+
+
+state 46:
+
+	atomic_exp : LET decls IN exp END .  (reduce by rule 20)
+
+
+
+	.	reduce by rule 20
+
+
+state 47:
+
+	atomic_exp : LPAREN exp COMMA exp RPAREN .  (reduce by rule 23)
+
+
+
+	.	reduce by rule 23
+
+
+state 48:
+
+	atomic_exp : LPAREN CASE exp OF INL . IDENT GOESTO exp BAR INR IDENT GOESTO exp RPAREN 
+
+	IDENT	shift 49
+
+
+	.	error
+
+
+state 49:
+
+	atomic_exp : LPAREN CASE exp OF INL IDENT . GOESTO exp BAR INR IDENT GOESTO exp RPAREN 
+
+	GOESTO	shift 50
+
+
+	.	error
+
+
+state 50:
+
+	atomic_exp : LPAREN CASE exp OF INL IDENT GOESTO . exp BAR INR IDENT GOESTO exp RPAREN 
+
+	IDENT	shift 19
+	LPAREN	shift 18
+	LET	shift 17
+	FN	shift 14
+	INL	shift 13
+	INR	shift 12
+	FST	shift 11
+	SND	shift 10
+	ROLL	shift 9
+	UNROLL	shift 8
+	NUMBER	shift 7
+
+	exp	goto 51
+	builtin	goto 3
+	atomic_exp_list	goto 2
+	atomic_exp	goto 1
+
+	.	error
+
+
+state 51:
+
+	atomic_exp : LPAREN CASE exp OF INL IDENT GOESTO exp . BAR INR IDENT GOESTO exp RPAREN 
+
+	BAR	shift 52
+
+
+	.	error
+
+
+state 52:
+
+	atomic_exp : LPAREN CASE exp OF INL IDENT GOESTO exp BAR . INR IDENT GOESTO exp RPAREN 
+
+	INR	shift 53
+
+
+	.	error
+
+
+state 53:
+
+	atomic_exp : LPAREN CASE exp OF INL IDENT GOESTO exp BAR INR . IDENT GOESTO exp RPAREN 
+
+	IDENT	shift 54
+
+
+	.	error
+
+
+state 54:
+
+	atomic_exp : LPAREN CASE exp OF INL IDENT GOESTO exp BAR INR IDENT . GOESTO exp RPAREN 
+
+	GOESTO	shift 55
+
+
+	.	error
+
+
+state 55:
+
+	atomic_exp : LPAREN CASE exp OF INL IDENT GOESTO exp BAR INR IDENT GOESTO . exp RPAREN 
+
+	IDENT	shift 19
+	LPAREN	shift 18
+	LET	shift 17
+	FN	shift 14
+	INL	shift 13
+	INR	shift 12
+	FST	shift 11
+	SND	shift 10
+	ROLL	shift 9
+	UNROLL	shift 8
+	NUMBER	shift 7
+
+	exp	goto 56
+	builtin	goto 3
+	atomic_exp_list	goto 2
+	atomic_exp	goto 1
+
+	.	error
+
+
+state 56:
+
+	atomic_exp : LPAREN CASE exp OF INL IDENT GOESTO exp BAR INR IDENT GOESTO exp . RPAREN 
+
+	RPAREN	shift 57
+
+
+	.	error
+
+
+state 57:
+
+	atomic_exp : LPAREN CASE exp OF INL IDENT GOESTO exp BAR INR IDENT GOESTO exp RPAREN .  (reduce by rule 22)
+
+
+
+	.	reduce by rule 22
+
+
+state 58:
+
+
+	EOF	accept
+	SEMI	accept
+
+
+	.	error
+
+75 of 212 action table entries left after compaction
+51 goto table entries
